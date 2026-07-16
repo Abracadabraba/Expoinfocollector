@@ -1,6 +1,12 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, session } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
+
+// Some GPU/driver combinations render the camera preview as a solid green
+// (or pink) frame in Electron/Chromium due to a hardware video decode bug.
+// Disabling GPU acceleration forces the software path and avoids it. This
+// must be called before the app is ready.
+app.disableHardwareAcceleration();
 
 let mainWindow;
 
@@ -30,6 +36,20 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // Explicitly allow camera (and mic, unused but harmless) access requests
+  // from the renderer, so getUserMedia() is never silently blocked even if
+  // Electron's default permission behavior changes between versions.
+  session.defaultSession.setPermissionRequestHandler((_webContents, permission, callback) => {
+    if (permission === 'media') {
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
+  session.defaultSession.setPermissionCheckHandler((_webContents, permission) => {
+    return permission === 'media';
+  });
+
   createWindow();
 
   app.on('activate', () => {
