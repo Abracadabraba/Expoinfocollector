@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">制药用水设备展会客户收集</string>
+    <string name="title_activity_main">制药用水设备展会客户收集</string>
+    <string name="package_name">com.company.customerregistration</string>
+    <string name="custom_url_scheme">com.company.customerregistration</string>
+</resources>

@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./web-Dhaih147.js","./index-Cb0jvJMO.js","./index-D7D04gbe.css"])))=>i.map(i=>d[i]);
+import{i as e,t}from"./index-Cb0jvJMO.js";var n=e(`FileSharer`,{web:()=>t(()=>import(`./web-Dhaih147.js`).then(e=>new e.FileSharerWeb),__vite__mapDeps([0,1,2]),import.meta.url)});export{n as FileSharer};

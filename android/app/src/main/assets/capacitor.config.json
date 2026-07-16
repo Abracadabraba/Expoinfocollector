@@ -1,0 +1,6 @@
+{
+	"appId": "com.company.customerregistration",
+	"appName": "制药用水设备展会客户收集",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}

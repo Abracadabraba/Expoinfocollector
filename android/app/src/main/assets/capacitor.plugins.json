@@ -1,0 +1,22 @@
+[
+	{
+		"pkg": "@capacitor/camera",
+		"classpath": "com.capacitorjs.plugins.camera.CameraPlugin"
+	},
+	{
+		"pkg": "@capacitor/filesystem",
+		"classpath": "com.capacitorjs.plugins.filesystem.FilesystemPlugin"
+	},
+	{
+		"pkg": "@capacitor/share",
+		"classpath": "com.capacitorjs.plugins.share.SharePlugin"
+	},
+	{
+		"pkg": "@capgo/capacitor-file-sharer",
+		"classpath": "app.capgo.filesharer.FileSharerPlugin"
+	},
+	{
+		"pkg": "@jcesarmobile/capacitor-ocr",
+		"classpath": "com.jcesarmobile.capacitor.ocr.OcrPlugin"
+	}
+]
