@@ -23,11 +23,11 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Build Windows installer
+      - name: Build Windows installer + portable exe
         run: npx electron-builder --win --publish=never
 
-      - name: Upload installer artifact
+      - name: Upload Windows build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows-installer
+          name: windows-builds
           path: dist-electron/*.exe
