@@ -40,3 +40,32 @@ export async function autoLandscape(dataUrl) {
   }
   return { dataUrl, width: img.naturalWidth, height: img.naturalHeight };
 }
+
+// Modern phone cameras produce photos several MB in size at full resolution.
+// Every record stores its business-card photo as a base64 string directly in
+// localStorage, so a handful of full-size photos is enough to fill up the
+// browser's storage quota and make saving fail. A business card only needs
+// to be legible, not 12-megapixel — so we downscale to a max width (default
+// 1280px, proportional height) and re-encode as JPEG before it's ever stored.
+// Only scales DOWN; smaller images are left alone.
+export async function resizeImageDataUrl(dataUrl, maxWidth = 1280, quality = 0.85) {
+  const img = await loadImage(dataUrl);
+  const { naturalWidth: w, naturalHeight: h } = img;
+  if (w <= maxWidth) {
+    // Already small enough — still re-encode as JPEG at the given quality in
+    // case the source was an uncompressed/high-quality format, but keep size.
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    return { dataUrl: canvas.toDataURL('image/jpeg', quality), width: w, height: h };
+  }
+  const scale = maxWidth / w;
+  const newWidth = maxWidth;
+  const newHeight = Math.round(h * scale);
+  const canvas = document.createElement('canvas');
+  canvas.width = newWidth;
+  canvas.height = newHeight;
+  canvas.getContext('2d').drawImage(img, 0, 0, newWidth, newHeight);
+  return { dataUrl: canvas.toDataURL('image/jpeg', quality), width: newWidth, height: newHeight };
+}

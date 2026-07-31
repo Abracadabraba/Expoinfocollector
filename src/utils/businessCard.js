@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { autoLandscape } from './imageOrientation';
+import { autoLandscape, resizeImageDataUrl } from './imageOrientation';
 
 // --- Native (Android) capture: system camera app + on-device Google ML Kit OCR ---
 // Returns { imageDataUrl, width, height, rawText, lines, guesses }
@@ -27,7 +27,10 @@ export async function processCardImage(rawDataUrl, ocrEngine) {
   // Business cards are wide rectangles — if the camera handed back a portrait
   // (taller-than-wide) image, rotate it 90° so it isn't stretched when placed
   // into the exported Word document.
-  const { dataUrl: imageDataUrl, width, height } = await autoLandscape(rawDataUrl);
+  const landscaped = await autoLandscape(rawDataUrl);
+  // Downscale to a reasonable max width before it ever gets stored — this is
+  // the fix for local storage filling up after a handful of full-size photos.
+  const { dataUrl: imageDataUrl, width, height } = await resizeImageDataUrl(landscaped.dataUrl, 1280, 0.85);
 
   let rawText = '';
 
