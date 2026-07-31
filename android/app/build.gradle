@@ -16,7 +16,25 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        // Pinned so every build (this one and all future CI builds) is signed
+        // with the SAME key. Without this, Android auto-generates a fresh
+        // debug key on every fresh build machine, so each new APK has a
+        // different signature — Android then refuses to install it over the
+        // previous version ("app not installed"), forcing an uninstall that
+        // wipes all locally saved records. Pinning this keystore fixes that
+        // for every build going forward.
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
