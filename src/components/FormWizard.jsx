@@ -42,6 +42,7 @@ export default function FormWizard({ existingRecord, onDone, onCancel }) {
   const [stepIndex, setStepIndex] = useState(0);
   const [saving, setSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
+  const [saveError, setSaveError] = useState('');
   const [lastExportPath, setLastExportPath] = useState(null);
 
   const selectedProducts = data.products || [];
@@ -146,19 +147,35 @@ export default function FormWizard({ existingRecord, onDone, onCancel }) {
 
   async function handleSave() {
     setSaving(true);
-    let record;
-    if (currentRecord) {
-      record = updateRecord(currentRecord.id, data);
-      setSavedMessage(
-        `已保存为新版本 ${'R' + record.history.length} / Saved as new version R${record.history.length}`
+    setSaveError('');
+    try {
+      let record;
+      if (currentRecord) {
+        record = updateRecord(currentRecord.id, data);
+        setSavedMessage(
+          `已保存为新版本 ${'R' + record.history.length} / Saved as new version R${record.history.length}`
+        );
+      } else {
+        record = createRecord(data);
+        setSavedMessage('已创建新客户记录 / New record created');
+      }
+      setCurrentRecord(record);
+      return record;
+    } catch (e) {
+      // Previously an error here (e.g. storage full) would throw past this
+      // point and leave `saving` stuck at true forever, permanently graying
+      // out both the Save and Export buttons even though nothing was wrong
+      // with Export itself. Now we always surface the error and reset state.
+      console.error('Save failed', e);
+      setSaveError(
+        e && e.name === 'StorageFullError'
+          ? e.message
+          : '保存失败，请重试 / Save failed, please try again'
       );
-    } else {
-      record = createRecord(data);
-      setSavedMessage('已创建新客户记录 / New record created');
+      return null;
+    } finally {
+      setSaving(false);
     }
-    setCurrentRecord(record);
-    setSaving(false);
-    return record;
   }
 
   function handleBackToHome() {
@@ -390,6 +407,7 @@ export default function FormWizard({ existingRecord, onDone, onCancel }) {
           <h2>确认 & 保存 / Review & Save</h2>
           <p>请检查以上信息无误后保存或导出。</p>
           {savedMessage && <div className="saved-banner">{savedMessage}</div>}
+          {saveError && <p className="error-text">{saveError}</p>}
           {lastExportPath && (
             <button
               className="btn small"
